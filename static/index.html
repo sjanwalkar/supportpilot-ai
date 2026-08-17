@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SupportPilot AI</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --border: #e2e5ea;
+    --text: #1f2430;
+    --muted: #6b7280;
+    --accent: #3457d5;
+    --accent-text: #ffffff;
+    --error: #b3261e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  header p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  #new-chat-btn {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .empty-state {
+    margin: auto;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .message {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .message.user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.bot {
+    align-self: flex-start;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .message.bot.thinking {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .message.bot.error {
+    color: var(--error);
+    border-color: var(--error);
+  }
+
+  .sources {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 6px;
+  }
+
+  .guardrail-note {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  form#chat-form {
+    border-top: 1px solid var(--border);
+    background: var(--panel);
+    padding: 14px 20px;
+  }
+
+  .input-row {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  #message-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+  }
+
+  #message-input:focus {
+    border-color: var(--accent);
+  }
+
+  button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>SupportPilot AI</h1>
+    <p>Phase 10 — guardrails active, talks to /api/chat</p>
+  </div>
+  <button id="new-chat-btn" type="button">New chat</button>
+</header>
+
+<div id="chat">
+  <div class="empty-state" id="empty-state">Ask a support question to get started.</div>
+</div>
+
+<form id="chat-form">
+  <div class="input-row">
+    <input
+      id="message-input"
+      type="text"
+      placeholder="How do I reset my password?"
+      autocomplete="off"
+    >
+    <button type="submit" id="send-btn">Send</button>
+  </div>
+</form>
+
+<script>
+  const chat = document.getElementById('chat');
+  let emptyState = document.getElementById('empty-state');
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('message-input');
+  const sendBtn = document.getElementById('send-btn');
+  const newChatBtn = document.getElementById('new-chat-btn');
+
+  // Set from the server's response after the first message (Phase 7).
+  // Sending this back on every request is what lets the bot use earlier
+  // turns as context for follow-up questions.
+  let conversationId = null;
+
+  // Adds a message bubble to the chat log and returns the element,
+  // so callers (like the "Thinking..." placeholder) can update it later.
+  function addMessage(role, text, extraClass) {
+    if (emptyState) emptyState.remove();
+
+    const el = document.createElement('div');
+    el.className = `message ${role}` + (extraClass ? ` ${extraClass}` : '');
+    el.textContent = text;
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+
+  async function sendMessage(message) {
+    addMessage('user', message);
+
+    const thinkingEl = addMessage('bot', 'Thinking…', 'thinking');
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, conversation_id: conversationId }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.detail || `Request failed (${res.status})`);
+      }
+
+      conversationId = data.conversation_id;
+
+      thinkingEl.textContent = data.answer;
+      thinkingEl.classList.remove('thinking');
+
+      if (data.guardrail_triggered) {
+        const guardrail = document.createElement('div');
+        guardrail.className = 'sources guardrail-note';
+        guardrail.textContent = 'Guardrail: ' + data.guardrail_triggered;
+        thinkingEl.appendChild(guardrail);
+      }
+
+      if (data.tool_calls && data.tool_calls.length > 0) {
+        const tools = document.createElement('div');
+        tools.className = 'sources';
+        const formatted = data.tool_calls
+          .map(tc => {
+            const args = Object.entries(tc.args || {}).map(([k, v]) => `${k}=${v}`).join(', ');
+            return `${tc.name}(${args})`;
+          })
+          .join(', ');
+        tools.textContent = 'Tools used: ' + formatted;
+        thinkingEl.appendChild(tools);
+      }
+
+      if (data.citations && data.citations.length > 0) {
+        const sources = document.createElement('div');
+        sources.className = 'sources';
+        sources.textContent = 'Sources: ' + data.citations.join(', ');
+        thinkingEl.appendChild(sources);
+      }
+    } catch (err) {
+      thinkingEl.textContent = `Something went wrong: ${err.message}`;
+      thinkingEl.classList.remove('thinking');
+      thinkingEl.classList.add('error');
+    } finally {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
+    input.value = '';
+    sendMessage(message);
+  });
+
+  newChatBtn.addEventListener('click', () => {
+    conversationId = null;
+    chat.innerHTML = '<div class="empty-state" id="empty-state">Ask a support question to get started.</div>';
+    emptyState = document.getElementById('empty-state');
+    input.focus();
+  });
+</script>
+
+</body>
+</html>

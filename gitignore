@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment (regenerate with `uv sync`)
+.venv/
+
+# Secrets -- NEVER commit this. Contains GEMINI_API_KEY / PINECONE_API_KEY.
+.env
+
+# Local runtime data (regenerate with seed_crm.py / ingest_kb.py)
+data/supportpilot.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/

@@ -1,0 +1,118 @@
+[
+  {
+    "id": "kb-account-password-reset",
+    "category": "kb",
+    "message": "How do I reset my password?",
+    "expected_source": "account-management",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-orders-tracking",
+    "category": "kb",
+    "message": "How do I track my order?",
+    "expected_source": "orders",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-shipping-options",
+    "category": "kb",
+    "message": "What delivery options do you offer?",
+    "expected_source": "shipping-and-delivery",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-payments-methods",
+    "category": "kb",
+    "message": "What payment methods do you accept?",
+    "expected_source": "payments-and-invoices",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-refunds-policy",
+    "category": "kb",
+    "message": "What's your refund policy?",
+    "expected_source": "refunds-and-returns",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-newsletter-unsubscribe",
+    "category": "kb",
+    "message": "How do I unsubscribe from the newsletter?",
+    "expected_source": "newsletter-and-communication-preferences",
+    "expect_escalation": false
+  },
+  {
+    "id": "kb-contact-human",
+    "category": "kb",
+    "message": "How do I reach a human agent?",
+    "expected_source": "contacting-support",
+    "expect_escalation": false
+  },
+  {
+    "id": "tool-get-customer-profile",
+    "category": "tool",
+    "message": "Can you look up account CUST-003 and tell me what plan they're on?",
+    "expected_tool": "get_customer_profile",
+    "expect_escalation": false
+  },
+  {
+    "id": "tool-check-feature-access",
+    "category": "tool",
+    "message": "Does CUST-002 have priority support?",
+    "expected_tool": "check_feature_access",
+    "expect_escalation": false
+  },
+  {
+    "id": "escalation-with-customer-id",
+    "category": "escalation",
+    "message": "CUST-005 here, I want to delete my account",
+    "expect_escalation": true
+  },
+  {
+    "id": "escalation-without-customer-id",
+    "category": "escalation",
+    "message": "Someone accessed my account without my permission",
+    "expect_escalation": true
+  },
+  {
+    "id": "escalation-fraud-case",
+    "category": "escalation",
+    "message": "What happens if a purchase was made, but it was a fraud case?",
+    "expect_escalation": true
+  },
+  {
+    "id": "no-escalation-stolen-package",
+    "category": "guardrail-negative",
+    "message": "My package was stolen off my porch, what should I do?",
+    "expected_source": "shipping-and-delivery",
+    "expect_escalation": false
+  },
+  {
+    "id": "no-escalation-damaged-package",
+    "category": "guardrail-negative",
+    "message": "My order arrived damaged, what are my options?",
+    "expected_source": "shipping-and-delivery",
+    "expect_escalation": false
+  },
+  {
+    "id": "smalltalk-thanks",
+    "category": "smalltalk",
+    "message": "Thank you!",
+    "expect_escalation": false,
+    "expect_no_guardrail": true
+  },
+  {
+    "id": "smalltalk-compound-unspaced",
+    "category": "smalltalk",
+    "message": "ok, Thankyou.",
+    "expect_escalation": false,
+    "expect_no_guardrail": true
+  },
+  {
+    "id": "smalltalk-greeting",
+    "category": "smalltalk",
+    "message": "hi",
+    "expect_escalation": false,
+    "expect_no_guardrail": true
+  }
+]

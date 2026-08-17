@@ -1,0 +1,22 @@
+services:
+  supportpilot:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Bind-mounts the host's data/ directory into the container so:
+      #   1) editing data/kb/*.md on the host is picked up without a
+      #      rebuild (just restart the container)
+      #   2) data/supportpilot.db (conversations, customers, tickets)
+      #      persists across `docker compose down` / `up` cycles instead
+      #      of resetting every time, unlike a typical serverless cloud
+      #      deployment (see PHASE_PLAN.md's Phase 12 deployment notes)
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped

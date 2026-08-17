@@ -1,0 +1,55 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.secret
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+
+# Local databases and generated data
+*.db
+*.sqlite
+*.sqlite3
+supportpilot.db
+data/raw/*
+data/generated/*
+data/uploads/*
+!data/raw/.gitkeep
+!data/generated/.gitkeep
+!data/uploads/.gitkeep
+
+# Logs and runtime files
+*.log
+logs/
+.tmp/
+tmp/
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker
+.docker/

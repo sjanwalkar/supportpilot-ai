@@ -1,0 +1,20 @@
+[project]
+name = "supportpilot-ai"
+version = "0.1.0"
+description = "SupportPilot AI - phase-by-phase learning project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "google-genai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.29.0",
+    "pinecone>=5.0.0",
+    "mcp>=1.10.0,<2.0.0",
+]
+ 
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
+ 
