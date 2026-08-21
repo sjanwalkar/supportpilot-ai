@@ -11,14 +11,8 @@ after the fact.
 
 ## Demo
 
-<!--
-  Add your demo video here once recorded. Two common options:
-  1. Upload to YouTube/Loom and link a thumbnail:
-     [![Watch the demo](thumbnail.png)](https://your-video-url)
-  2. Embed a GIF directly (GitHub renders these inline):
-     ![demo](docs/demo.gif)
--->
-*🎥 Demo video coming soon.*
+https://github.com/user-attachments/assets/e4fe5a03-dd28-48eb-84fc-40d391d48305
+
 
 ## What it does
 
@@ -76,7 +70,7 @@ in **[DEPLOYMENT.md](DEPLOYMENT.md)**.
 ## Read the deep dive
 
 I wrote up the full build — the decisions, the bugs, and the fixes — on
-Medium: **[Read it here →](https://medium.com/@your-username/your-post-slug)**
+Medium: (https://medium.com/@sjanwalkar1996/building-supportpilot-ai-a-phase-by-phase-guide-to-a-production-minded-customer-support-agent-279cf4099775)
 
 ## License
 
